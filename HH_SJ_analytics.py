@@ -32,11 +32,11 @@ def predict_salary(salary_from, salary_to):
     if not salary_from and not salary_to:
         avg_salary = None
     elif salary_from and salary_to:
-        avg_salary = float(salary_from + salary_to) / 2
+        avg_salary = (salary_from + salary_to) / 2
     elif salary_from:
-        avg_salary = float(salary_from) * 1.2
+        avg_salary = salary_from * 1.2
     elif salary_to:
-        avg_salary = float(salary_to) * 0.8
+        avg_salary = salary_to * 0.8
     return avg_salary
 
 
@@ -64,31 +64,35 @@ def get_analytics_from_hh(languages, api_hh_url, hh_headers, searching_period, c
     hh_avg_salary_from_languages = {}
     for language in languages:
         salaryes_from_language_hh = []
-        hh_paload = {
+        hh_payload = {
             'text': 'Программист {}'.format(language),
             'period': '{}'.format(searching_period),
             'area': '{}'.format(city_id)
         }
-        vacancies = get_vacancies(api_hh_url, hh_paload, hh_headers)
-        for page in range(0, int(vacancies['pages'])):
-            hh_paload['page'] = page
-            vacancies = get_vacancies(api_hh_url, hh_paload, hh_headers)
+        vacancies = get_vacancies(api_hh_url, hh_payload, hh_headers)
+        pages_count = 1
+        page = 0
+        while page < pages_count:
+            hh_payload['page'] = page
+            vacancies = get_vacancies(api_hh_url, hh_payload, hh_headers)
             for vacancy in vacancies['items']:
                 avg_salary = predict_rub_salary_hh(vacancy)
                 if avg_salary:
                     salaryes_from_language_hh.append(avg_salary)
-            if not salaryes_from_language_hh:
-                average_salary = 0
-            else:
-                average_salary = int(
-                    sum(salaryes_from_language_hh) / len(salaryes_from_language_hh))
-            vacancies_found = vacancies['found']
-            vacancies_processed = len(salaryes_from_language_hh)
-            vacancies_from_language = {
-                'vacancies_found': vacancies_found,
-                'vacancies_processed': vacancies_processed,
-                'average_salary': average_salary
-            }
+            page = page + 1
+            pages_count = vacancies['pages']
+        if not salaryes_from_language_hh:
+            average_salary = 0
+        else:
+            average_salary = int(
+                sum(salaryes_from_language_hh) / len(salaryes_from_language_hh))
+        vacancies_found = vacancies['found']
+        vacancies_processed = len(salaryes_from_language_hh)
+        vacancies_from_language = {
+            'vacancies_found': vacancies_found,
+            'vacancies_processed': vacancies_processed,
+            'average_salary': average_salary
+        }
         hh_avg_salary_from_languages[language] = vacancies_from_language
     return hh_avg_salary_from_languages
 
@@ -112,7 +116,7 @@ def get_analytics_from_sj(languages, api_sj_url, sj_headers, city_name):
                     salaryes_from_language_sj.append(avg_salary)
             next_page = vacancies['more']
             page = page + 1
-        if avg_salary:
+        if salaryes_from_language_sj:
             average_salary = int(sum(salaryes_from_language_sj) / len(salaryes_from_language_sj))
         else:
             average_salary = 0
@@ -152,11 +156,12 @@ if __name__ == '__main__':
     city_id = 1
     city_name = 'Москва'
     try:
-         hh_avg_salary_from_languages = get_analytics_from_hh(languages, api_hh_url, hh_headers, searching_period, city_id)
-         hh_vacancies_table = make_table(hh_avg_salary_from_languages, 'HeadHunter Moscow')
-         print(hh_vacancies_table.table)
+        hh_avg_salary_from_languages = get_analytics_from_hh(languages, api_hh_url, hh_headers, searching_period,
+                                                             city_id)
+        hh_vacancies_table = make_table(hh_avg_salary_from_languages, 'HeadHunter Moscow')
+        print(hh_vacancies_table.table)
     except(requests.HTTPError, requests.ConnectionError) as e:
-         quit('Получили ошибку: {} '.format(e))
+        quit('Получили ошибку: {} '.format(e))
     try:
         sj_avg_salary_from_languages = get_analytics_from_sj(languages, api_sj_url, sj_headers, city_name)
         hh_vacancies_table = make_table(sj_avg_salary_from_languages, 'SuperJob Moscow')
