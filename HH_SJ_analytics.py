@@ -73,6 +73,7 @@ def get_analytics_from_hh(languages, api_hh_url, hh_headers, searching_period, c
         page = 0
         while page < pages_count:
             hh_payload['page'] = page
+            vacancies = get_vacancies(api_hh_url, hh_payload, hh_headers)
             for vacancy in vacancies['items']:
                 avg_salary = predict_rub_salary_hh(vacancy)
                 if avg_salary:
