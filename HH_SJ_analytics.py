@@ -85,13 +85,13 @@ def get_analytics_from_hh(languages, api_hh_url, hh_headers, searching_period, c
             else:
                 average_salary = int(
                     sum(salaryes_from_language_hh) / len(salaryes_from_language_hh))
-            vacancies_found = vacancies['found']
-            vacancies_processed = len(salaryes_from_language_hh)
-            vacancies_from_language = {
-                'vacancies_found': vacancies_found,
-                'vacancies_processed': vacancies_processed,
-                'average_salary': average_salary
-            }
+        vacancies_found = vacancies['found']
+        vacancies_processed = len(salaryes_from_language_hh)
+        vacancies_from_language = {
+            'vacancies_found': vacancies_found,
+            'vacancies_processed': vacancies_processed,
+            'average_salary': average_salary
+        }
         hh_avg_salary_from_languages[language] = vacancies_from_language
     return hh_avg_salary_from_languages
 
