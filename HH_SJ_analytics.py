@@ -114,7 +114,7 @@ def get_analytics_from_sj(languages, api_sj_url, sj_headers, city_name):
                     salaryes_from_language_sj.append(avg_salary)
             next_page = vacancies['more']
             page = page + 1
-        if avg_salary:
+        if salaryes_from_language_sj:
             average_salary = int(sum(salaryes_from_language_sj) / len(salaryes_from_language_sj))
         else:
             average_salary = 0
