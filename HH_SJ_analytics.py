@@ -69,14 +69,16 @@ def get_analytics_from_hh(languages, api_hh_url, hh_headers, searching_period, c
             'period': '{}'.format(searching_period),
             'area': '{}'.format(city_id)
         }
-        vacancies = get_vacancies(api_hh_url, hh_payload, hh_headers)
-        for page in range(0, int(vacancies['pages'])):
+        pages_count = 1
+        page = 0
+        while page < pages_count:
             hh_payload['page'] = page
-            vacancies = get_vacancies(api_hh_url, hh_payload, hh_headers)
             for vacancy in vacancies['items']:
                 avg_salary = predict_rub_salary_hh(vacancy)
                 if avg_salary:
                     salaryes_from_language_hh.append(avg_salary)
+            page = page + 1
+            pages_count = vacancies['pages']
             if not salaryes_from_language_hh:
                 average_salary = 0
             else:
