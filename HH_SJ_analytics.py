@@ -64,15 +64,15 @@ def get_analytics_from_hh(languages, api_hh_url, hh_headers, searching_period, c
     hh_avg_salary_from_languages = {}
     for language in languages:
         salaryes_from_language_hh = []
-        hh_paload = {
+        hh_payload = {
             'text': 'Программист {}'.format(language),
             'period': '{}'.format(searching_period),
             'area': '{}'.format(city_id)
         }
-        vacancies = get_vacancies(api_hh_url, hh_paload, hh_headers)
+        vacancies = get_vacancies(api_hh_url, hh_payload, hh_headers)
         for page in range(0, int(vacancies['pages'])):
-            hh_paload['page'] = page
-            vacancies = get_vacancies(api_hh_url, hh_paload, hh_headers)
+            hh_payload['page'] = page
+            vacancies = get_vacancies(api_hh_url, hh_payload, hh_headers)
             for vacancy in vacancies['items']:
                 avg_salary = predict_rub_salary_hh(vacancy)
                 if avg_salary:
