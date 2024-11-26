@@ -31,7 +31,4 @@ pip install -r requirements.txt
 python3 HH_SJ_analytics.py
 ``` 
 
-## Цели проекта
-
-Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org).
  
